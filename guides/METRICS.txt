@@ -1,0 +1,204 @@
+			    DOOM METRICS
+			    ------------
+
+		    Scott Ampoker (scott@basis.com)
+
+
+Creation of a successful Doom level requires that the PWAD designer be
+aware of the "physical" sizes and limitations of the Doom world.  On
+a less critical level, the choice of wall, floor, and ceiling textures
+will have some influence on room dimensions.  This document is primarily
+concerned with physical limitations.  This document is not complete,
+and as I explain below, it is not absolute either.  I regret that
+I haven't determined the map limits of a Doom level.  The data structures 
+would appear to allow grid coordinates as well and floor/ceiling heights 
+from -32768..32767.  However, map editors impose stricter limits.
+
+To determine physical limitations, I created a simple level with
+three sectors resembling this:
+
+            *-----------*         *------------*
+	    |           |         |            |
+	    |           *---------*            |
+	    |           |         |            |
+	    |           *---------*            |
+	    |           |         |            |
+            *-----------*         *------------*
+
+By manipulating the height and width of the center sector I was able to
+determine minimum clearances.  While it was easy to perform tests with
+"the player", it was a little trickier testing the various enemies.
+I had to get an enemy to chase me through the center hallway.  Unfortunately,
+this does not lead to definitive results.  If the width of the hallway is
+near the minimum limit, the enemy is far less likely to enter the hallway
+within a short period of time.  This would give the false impression that 
+the hallway is already too narrow.  I advise PWAD designers to allow extra 
+clearance if it is intended that enemies move easily from one sector to the 
+next.
+
+After performing most of my tests, I received the April 13 version of 
+"The Unofficial Doom Specs" by Matt Fell.  Unlike the earlier version I 
+had been using, this version provided the actual width and height of each 
+object.  I found this useful in comfirming most (but not all) of my test 
+results and for filling in the missing data on the Spiderdemon which I 
+hadn't tested at all.  (Many thanks to Matt for his invaluable contributions).
+It appears that the minimum width through which an object will pass is greater 
+than the actual diameter of the object.  For example, The 32-wide player 
+requires a width of 33 (although Fell reports a minimum width of 34).  I 
+will list the physical dimensions as well as the minimum clearances I have 
+actually seen work.  I left a value empty ("-") if I hadn't satisfactorily 
+established a minimum.
+
+		                        MINUMIM
+                    ACTUAL 	       CLEARANCE
+OBJECT		HEIGHT  WIDTH        HEIGHT  WIDTH
+------		------  -----        ------  -----
+Player	          56      32           56      33
+Trooper/Sarg      56      40	       56      44
+Imp		  56      40           56      44
+Demon/Spectre	  56      60	       56      64
+Cacodemon	  56      62	       56      64
+Lost Soul	  56      32	       56       -
+Baron		  64      48	       64       -
+Cyberdemon	 110      80          110       -
+Spiderdemon      100     256		-	-
+
+NOTE: Rising doors stop 4 units short of the neighboring ceiling.  In order
+to ensure the minimum doorway height of 56, the neighboring ceiling should 
+have a clearance of at least 60.
+
+ANOTHER NOTE: When passing from one sector to the next, an object must
+fit between the higher of the two floors and the lower of the two ceilings.
+
+
+STEPS AND STAIRS
+
+It appears that any creature with legs can step up as many as 24 units 
+at a time.  (I haven't verified this with the Spiderdemon).  As we all know, 
+the player can step down from any height.  Enemies appear to be limited to 
+descending at most 24 units at a time.  (Floating enemies aren't
+constrained by steps).
+
+Although a simple step up or down is easy to handle, stairways are
+far more complicated.  I figured that the depth of each step (the
+distance front of one step to the front of the next step) had to
+be a factor.  The test results confirmed this but were confusing at 
+best.
+
+The player can climb steps with a depth as *narrow as 1*!  This could
+be creatively used in PWADS since it would appear that the player is
+scaling a sheer wall.
+
+Enemies are much more picky about steps.  For example, I discovered that
+a trooper would descend stairs that had a minimum step depth of 33 with
+the maximum riser height of 24.  When I changed the riser height to some 
+smaller value, the mimimum required depth got smaller too.  I gasped in horror
+realizing the amount of work it would take to figure out the magic formula,
+by trial and error, for each enemy.  For what it's worth, the following
+table shows the minimum observed depth for 24-unit risers.  You can assume 
+these to be a safe values for any smaller riser.  If your creatures
+appear to be afraid of the stairs, try adjusting the riser to depth
+ratio to create a kinder and gentler stairway.  (I did not test the 
+Cyberdemon or the Spiderdemon in this area.) 
+
+
+OBJECT		MINIMUM STEP DEPTH WITH 24-UNIT RISER
+------		-------------------------------------
+Trooper/Sarg	33
+Imp		33
+Demon/Spectre	51
+Cacodemon	N/A
+Lost Soul	N/A
+Baron		41
+Cyberdemon	-
+Spiderdemon	-
+
+
+
+WALL/ROOM DIMENSIONS
+
+Unlike the physical limits described above, wall/room dimensions are 
+determined more by aesthetic factors than by numerical requirements.  
+However, in the absence of hard rules, there are magic numbers and standard 
+situations that come up from time to time.  It is not practical to
+cover every situation here.  When in doubt, you should always 
+examine any of the stardard Doom levels for guidance.  It is helpful
+to always think in powers of 2.  Doom level editors should provide
+a user setable snap grid adjustable down to 8 units. 
+
+Room sizes are, of couse, entirely arbitrary.  However, hallway and
+corridor widths are commonly 64 or 128 units wide.
+
+Most general wall textures are 128 x 128 units.  The manner in which the
+wall textures are rendered is described in a separate document (MANAGING 
+TEXTURES AND THE "UNPEGGED" ATTRIBUTE).  The use of "unpegged" attributes 
+and X, Y offset modifiers enables the PWAD designer to satisfactorily use 
+these wall textures on any wall space.
+
+Some of the available wall textures have more specific uses such as
+doors, switches, decorations, and wall thickness filler.  Doors
+are usually 64 or 128 units wide.  Door heights can vary.  72 units
+seems to be a common door height in the standard Doom levels.
+
+Decorations and switches normally appear on wall textures that are
+64 units wide (a few are 128).  When placing these textures on
+non-standard wall widths, the decoration/switch will not appear centered
+without adjusting the texture X-offset.
+
+Wall thickness filler is used on the insides of door tracks, windows,
+and the occasional alcove.  Textures intended for such use normally 8 or 16 
+units wide but are designed to tile well with non-standard wall thicknesses 
+and heights.
+
+Special stair riser textures are 8 and 16 units high.  However, any
+texture may be used on a stair riser. 
+
+
+
+FLOORS AND CEILINGS
+-------------------
+
+The textures used for floors and ceilings are all 64 x 64 units.  Unlike
+wall textures, floor and ceiling textures are aligned and oriented with 
+respect to the underlying map coordinate grid.  Since these textures
+are tiled globally, they will always create seamless transitions from
+one sector to the next (assuming the adjoining sector has similar
+floor/ceiling textures).
+
+Some floor/ceiling textures have specific markings on them that are
+important.  For example, some ceiling textures have a grid of lights.
+To ensure that the ceiling lights in a sector tile correctly, not only
+must the sector size be a proper multiple of a single light, but the
+sector itself must be placed on the map at an appropriate grid line.
+
+A transporter pad has a special design.  In order for the image
+on the transporter pad to appear correct, the pad must be aligned on
+a 64 x 64 map grid.
+
+There are some special stair step textures (STEP1 and STEP2).  These could 
+be used for the top surface of each stair.  If you wish to use these textures 
+for your stairs, make sure you pick the texure with the proper north/south or
+east/west orientation and snap your stairs to a 64-unit width and a
+32-unit depth.
+
+
+REAL WORLD SCALE
+----------------
+
+Occasionally, a PWAD designer wishes to create a Doom level based on
+an actual place (such as his office building or home).  I undertook such
+a project using the actual blue prints as my reference.  This creates
+the problem of equating Doom measurement units to real world units.
+There is no magic formula.  The Doom engine does not appear to render
+things with consistant aspect ratio.  For my project, I found that the
+following scale produced a satisfying result that "felt right" when
+walking through the level:
+
+	16 Horizontal Doom units = 1 horizontal foot
+	10 Vertical Doom units = 1 vertical foot
+
+You may wish to experiment with these values to suit your tastes.  The
+vertical scale seems to be the hardest to pin down.  Heights look different
+in Doom depending on whether the player is near or far from the feature in
+question.
+
