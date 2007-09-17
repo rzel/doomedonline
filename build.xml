@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<project name="ReDoom" basedir="." default="all">
+	<property name="library" location="src"/>
+	<property name="binaries" location="deploy"/>
+	<!--<property name="FLEX_HOME" location="/path/to/flex"/>-->
+	
+	<target name="all" depends="clean,build" description="Do it all"/>
+	<target name="build" depends="flex-tasks" description="Build">
+		<mxmlc
+			file="${library}/DoomTest.as"
+			output="${binaries}/doom.swf"
+			use-network="false"
+		 	compiler.optimize="true"
+		>
+			<load-config filename="${FLEX_HOME}/frameworks/flex-config.xml"/>
+			<compiler.source-path path-element="${FLEX_HOME}/frameworks"/>
+			<compiler.source-path path-element="${library}"/>
+		</mxmlc>
+	</target>
+	<target name="clean" description="Clean">
+		<delete includeemptydirs="true">
+			<fileset dir="${binaries}" includes="**/*" />
+			<fileset dir="${library}" includes="*.cache"/>
+		</delete>
+	</target>
+	
+	<target name="flex-tasks">
+		<!-- Check for FLEX_HOME -->
+		<property environment="env"/>
+		<condition property="FLEX_HOME" value="${env.FLEX_HOME}">
+			<and>
+				<not><isset property="FLEX_HOME"/></not>
+				<isset property="env.FLEX_HOME"/>
+			</and>
+		</condition>
+		<fail unless="FLEX_HOME" message="FLEX_HOME variable not specified, where's Flex's home?" />
+		
+		<!-- Get Flex tasks -->
+		<property name="flex.antTasks" location="${FLEX_HOME}/ant/lib/flexTasks.jar"/>
+		<fail message="Flex Ant Tasks missing from ${flex.antTasks}">
+			<condition>
+				<not><available file="${flex.antTasks}"/></not>
+			</condition>
+		</fail>
+		<taskdef resource="flexTasks.tasks" classpath="${flex.antTasks}"/>
+	</target>
+	<target name="eclipse-refresh">
+		<eclipse.convertPath fileSystemPath="${binaries}" property="binaries-eclipse"/>
+		<eclipse.convertPath fileSystemPath="${library}" property="library-eclipse"/>
+		<eclipse.refreshLocal resource="${binaries-eclipse}" depth="infinite"/>
+		<eclipse.refreshLocal resource="${library-eclipse}" depth="zero"/>
+	</target>
+</project>
