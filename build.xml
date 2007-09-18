@@ -6,6 +6,7 @@
 	
 	<target name="all" depends="clean,build" description="Do it all"/>
 	<target name="build" depends="flex-tasks" description="Build">
+		<mkdir dir="${binaries}"/>
 		<mxmlc
 			file="${library}/DoomTest.as"
 			output="${binaries}/doom.swf"
